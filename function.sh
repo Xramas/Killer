@@ -1,9 +1,7 @@
 #!/bin/bash
-# Name: Killer 主程序菜单（自动模块 + 依赖检查）
+# Name: Killer 主程序菜单
 
 set -e
-
-KILLER_ROOT=$(pwd)
 
 # 自动加载所有模块目录（一级菜单）
 MODULE_DIRS=$(find . -maxdepth 1 -type d ! -name '.' | sort)
@@ -34,7 +32,7 @@ show_main_menu() {
   done
 
   echo "  0) 退出"
-  read -rp $'\n请输入模块编号并回车: ' mod_choice
+  read -p $'\n请输入模块编号并回车: ' mod_choice
 
   if [[ "$mod_choice" == "0" ]]; then
     echo "👋 再见！"
@@ -52,7 +50,7 @@ show_plugins() {
   local files=("$module"/*.sh)
 
   if [[ ! -e "${files[0]}" ]]; then
-    echo "⚠️ 模块 \"$module\" 下无可用插件，按回车返回..."
+    echo "⚠️  模块 \"$module\" 下无可用插件，按回车返回..."
     read
     return
   fi
@@ -73,21 +71,13 @@ show_plugins() {
     done
 
     echo "  0) 返回上一级"
-    read -rp $'\n请输入功能编号并回车: ' plugin_choice
+    read -p $'\n请输入功能编号并回车: ' plugin_choice
 
     if [[ "$plugin_choice" == "0" ]]; then
       break
     elif [[ "${plugin_map[$plugin_choice]}" != "" ]]; then
-      plugin_path="${plugin_map[$plugin_choice]}"
-      echo "🔧 执行插件: $plugin_path"
-
-      # 插件依赖检查
-      if [[ -f "$KILLER_ROOT/requirements.sh" ]]; then
-        bash "$KILLER_ROOT/requirements.sh" "$plugin_path"
-      fi
-
-      bash "$plugin_path"
-
+      echo "🔧 执行插件: ${plugin_map[$plugin_choice]}"
+      bash "${plugin_map[$plugin_choice]}"
       echo -e "\n✅ 执行完毕，按回车返回模块菜单..."
       read
     else
