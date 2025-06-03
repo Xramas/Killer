@@ -1,4 +1,3 @@
-````markdown
 # Killer Tools
 
 Killer 是一个为 Debian 系统量身打造的 Linux 工具箱，支持自动初始化系统源、智能判断地理位置、并提供交互式终端工具选择界面。
@@ -52,5 +51,3 @@ Killer/
 如有建议或 bug 回报，欢迎通过 GitHub Issue 联系我！
 
 ---
-
-```
