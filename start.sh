@@ -4,7 +4,7 @@
 set -e
 
 # 启动时绑定清理操作（仅清理初始化相关）
-trap "bash cleanup.sh init" EXIT
+trap "bash cleanup.sh all" EXIT
 
 echo "🌐 正在检测网络环境..."
 
