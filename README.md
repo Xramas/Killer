@@ -11,6 +11,10 @@ Killer 是一个专为 Debian 12 / 11 打造的终端工具集合，旨在自动
 ### ✅ 推荐方式（自动换源 + 自动依赖安装 + 自动启动）
 
 ```
+bash <(curl -sL https://k.xramas.eu.org)
+```
+
+```
 bash <(curl -sL https://raw.githubusercontent.com/Xramas/Killer/master/start.sh)
 ```
 
