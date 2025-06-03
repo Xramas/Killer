@@ -19,6 +19,12 @@ Killer 是一个为 Debian 系统量身打造的 Linux 工具箱，支持自动�
 bash <(curl -sL https://raw.githubusercontent.com/Xramas/Killer/refs/heads/master/bash.sh)
 ````
 
+调试：
+
+```bash
+bash <(curl -sL "https://raw.githubusercontent.com/Xramas/Killer/refs/heads/master/bash.sh?$(date +%s)")
+````
+
 ## 📋 示例功能菜单（初始化后）
 
 ```text
