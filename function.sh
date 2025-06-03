@@ -76,9 +76,20 @@ show_plugins() {
     if [[ "$plugin_choice" == "0" ]]; then
       break
     elif [[ "${plugin_map[$plugin_choice]}" != "" ]]; then
-      echo "🔧 执行插件: ${plugin_map[$plugin_choice]}"
+      echo "🔧 即将执行插件: ${plugin_map[$plugin_choice]}"
+      # 新增：在执行插件前，调用 requirements.sh 检查并安装依赖
+      # 假设 requirements.sh 与 function.sh 在同一目录下（即项目根目录）
+      if [[ -f "./requirements.sh" ]]; then
+        echo "⚙️  正在检查并安装插件依赖..."
+        bash ./requirements.sh "${plugin_map[$plugin_choice]}"
+        echo "✅ 依赖检查完成。"
+      else
+        echo "⚠️  警告: 未找到 requirements.sh 脚本，无法检查插件依赖。"
+      fi
+      
+      echo "🚀 开始执行插件..."
       bash "${plugin_map[$plugin_choice]}"
-      echo -e "\n✅ 执行完毕，按回车返回模块菜单..."
+      echo -e "\n✅ 插件执行完毕，按回车返回模块菜单..."
       read
     else
       echo "❌ 无效输入，按回车重试..."
