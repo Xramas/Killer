@@ -1,86 +1,57 @@
 #!/bin/bash
+# Name: Killer 启动入口
 
 set -e
 
-# 仓库基本信息
-REPO="Xramas/Killer"
-RAW_BASE_URL="https://raw.githubusercontent.com/$REPO/refs/heads/master"
-GH_PROXY_BASE_URL="https://gh-proxy.com/https://raw.githubusercontent.com/$REPO/refs/heads/master"
+echo "🌐 正在检测网络环境..."
 
-# 工作路径
-WORKDIR="/tmp/killer-tools"
-mkdir -p "$WORKDIR"
+# 使用时间戳参数防缓存
+ts=$(date +%s)
 
-# 核心脚本清单
-CORE_SCRIPTS=("area.sh" "configure_sources.sh" "essential.sh" "function.sh" "killer_cleanup.sh")
+# 判断区域
+curl -sL "https://raw.githubusercontent.com/Xramas/Killer/master/area.sh?${ts}" -o /tmp/area.sh
+chmod +x /tmp/area.sh
+source /tmp/area.sh
 
-# -----------------------------
-# ① 初步网络判断（仅依赖 curl）
-# -----------------------------
-echo "🌐 正在初步检测网络区域..."
-
-COUNTRY=$(curl -s https://ipinfo.io/country || echo "ERR")
-if [[ "$COUNTRY" == "CN" ]]; then
-    AREA="CN"
-    BASE_URL="$GH_PROXY_BASE_URL"
-    echo "🇨🇳 检测为中国大陆网络，使用加速链接"
+# 选择区域对应地址
+if [[ "$AREA" == "CN" ]]; then
+    ZIP_URL="https://gh-proxy.com/github.com/Xramas/Killer/archive/refs/heads/master.zip"
+    echo "🌏 检测到中国大陆网络，使用加速源..."
 else
-    AREA="Other"
-    BASE_URL="$RAW_BASE_URL"
-    echo "🌍 检测为非中国大陆网络，使用 GitHub 原始链接"
+    ZIP_URL="https://github.com/Xramas/Killer/archive/refs/heads/master.zip"
+    echo "🌍 检测到非中国大陆网络，使用 GitHub 官方源..."
 fi
 
-# -----------------------------
-# ② 下载并引入清理器（先执行 trap）
-# -----------------------------
-CLEANER_URL="$BASE_URL/killer_cleanup.sh"
-curl -sL "$CLEANER_URL" -o "$WORKDIR/killer_cleanup.sh"
-chmod +x "$WORKDIR/killer_cleanup.sh"
-source "$WORKDIR/killer_cleanup.sh"
-
-# -----------------------------
-# ③ 下载核心脚本
-# -----------------------------
-for file in "${CORE_SCRIPTS[@]}"; do
-    [[ "$file" == "killer_cleanup.sh" ]] && continue  # 已下载
-    echo "⏬ 正在下载 $file ..."
-    curl -sL "$BASE_URL/$file" -o "$WORKDIR/$file" || {
-        echo "❌ 下载 $file 失败，终止启动"
-        exit 1
-    }
-    chmod +x "$WORKDIR/$file"
+# 下载初始化脚本
+echo "📥 下载初始化脚本..."
+for file in area.sh configure_sources.sh essential.sh function.sh; do
+    curl -sL "https://raw.githubusercontent.com/Xramas/Killer/master/$file?${ts}" -o "/tmp/$file"
+    chmod +x "/tmp/$file"
 done
 
-# -----------------------------
-# ④ 执行初始化流程
-# -----------------------------
-cd "$WORKDIR"
-source ./area.sh             # 设置 AREA=CN/Other
-bash ./configure_sources.sh # 自动换源 + apt update
-bash ./essential.sh         # 安装 unzip、curl、lsb_release 等
+# 更换软件源并更新
+echo "🔧 正在更换软件源..."
+/tmp/configure_sources.sh
 
-# -----------------------------
-# ⑤ 下载并解压主程序
-# -----------------------------
-ZIPNAME="master.zip"
-ZIPDIR="Killer-master"
-RAW_ZIP_URL="https://github.com/$REPO/archive/refs/heads/$ZIPNAME"
-GH_ZIP_URL="https://gh-proxy.com/github.com/$REPO/archive/refs/heads/$ZIPNAME"
-ZIP_URL="$([[ "$AREA" == "CN" ]] && echo "$GH_ZIP_URL" || echo "$RAW_ZIP_URL")"
+# 安装必要依赖 unzip、curl、bash 等
+echo "📦 安装基础依赖..."
+/tmp/essential.sh
 
-echo "📥 正在下载 Killer 主程序..."
-curl -sL "$ZIP_URL" -o "$WORKDIR/$ZIPNAME"
+# 下载并解压主程序
+echo "📦 正在从: $ZIP_URL 下载项目..."
+wget -qO /tmp/killer.zip "$ZIP_URL"
 
 echo "🧩 正在解压..."
-unzip -q "$WORKDIR/$ZIPNAME" -d "$WORKDIR"
+rm -rf /tmp/killer-tools
+mkdir -p /tmp/killer-tools
+unzip -q /tmp/killer.zip -d /tmp/killer-tools
 
-cd "$WORKDIR/$ZIPDIR" || {
-    echo "❌ 解压失败，找不到主目录"
-    exit 1
-}
+cd /tmp/killer-tools/Killer-master || { echo "❌ 解压后未找到主目录！"; exit 1; }
 
-# -----------------------------
-# ⑥ 启动主菜单
-# -----------------------------
-echo "🚀 启动 Killer Tools 主程序..."
+# 设置执行权限
+echo "🔑 正在设置脚本执行权限..."
+find . -type f -name "*.sh" -exec chmod +x {} \;
+
+# 启动 Killer
+echo "🚀 启动 Killer..."
 bash ./function.sh
