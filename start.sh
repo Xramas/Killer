@@ -2,6 +2,9 @@
 
 set -e
 
+# 加载清理逻辑
+source "$WORKDIR/killer_cleanup.sh"
+
 # 仓库基本信息
 REPO="Xramas/Killer"
 RAW_BASE_URL="https://raw.githubusercontent.com/$REPO/refs/heads/master"
