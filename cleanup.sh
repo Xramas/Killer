@@ -1,15 +1,14 @@
 #!/bin/bash
-# Name: Killer 临时目录自动清理器
+# Name: 清理 Killer 临时文件
 
-# 默认临时工作目录
-WORKDIR="/tmp/killer-tools"
+# 用法：bash cleanup.sh [init|zip|all]
+MODE=${1:-all}
 
-cleanup() {
-    if [[ -d "$WORKDIR" ]]; then
-        echo -e "\n🧹 正在清理临时文件夹: $WORKDIR"
-        rm -rf "$WORKDIR"
-    fi
-}
+if [[ $MODE == "init" || $MODE == "all" ]]; then
+    rm -f /tmp/area.sh /tmp/sources.sh /tmp/essential.sh /tmp/function.sh
+fi
 
-# 注册退出、错误、中断时清理
-trap cleanup EXIT INT ERR
+if [[ $MODE == "zip" || $MODE == "all" ]]; then
+    rm -f /tmp/killer.zip
+    rm -rf /tmp/killer-tools
+fi
