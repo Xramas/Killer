@@ -24,7 +24,7 @@ fi
 
 # 下载初始化脚本
 echo "📥 下载初始化脚本..."
-for file in area.sh configure_sources.sh essential.sh function.sh; do
+for file in area.sh sources.sh essential.sh function.sh; do
     curl -sL "https://raw.githubusercontent.com/Xramas/Killer/master/$file?${ts}" -o "/tmp/$file"
     chmod +x "/tmp/$file"
 done
