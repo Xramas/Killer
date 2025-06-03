@@ -31,7 +31,7 @@ done
 
 # 更换软件源并更新
 echo "🔧 正在更换软件源..."
-/tmp/configure_sources.sh
+/tmp/sources.sh
 
 # 安装必要依赖 unzip、curl、bash 等
 echo "📦 安装基础依赖..."
