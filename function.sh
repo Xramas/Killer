@@ -20,7 +20,7 @@ while true; do
     echo -e "\n🧠 欢迎使用 Killer Tools"
     echo "--------------------------"
     for i in "${!MODULES[@]}"; do
-        label=$(echo "${MODULES[$i]}" | cut -d'::' -f2)
+        IFS="::" read -r dir label <<< "${MODULES[$i]}"
         printf " %2d) %s\n" $((i + 1)) "$label"
     done
     echo "  0) 退出"
@@ -31,7 +31,7 @@ while true; do
         echo "👋 再见！"
         exit 0
     elif [[ "$choice" =~ ^[1-9][0-9]*$ && "$choice" -le ${#MODULES[@]} ]]; then
-        MODULE_KEY=$(echo "${MODULES[$((choice - 1))]}" | cut -d'::' -f1)
+        IFS="::" read -r MODULE_KEY _ <<< "${MODULES[$((choice - 1))]}"
         MODULE_PATH="$KILLER_ROOT/$MODULE_KEY"
 
         if [[ ! -d "$MODULE_PATH" ]]; then
