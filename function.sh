@@ -12,42 +12,46 @@ declare -A module_names=(
     [custom]="自定义脚本模块"
 )
 
-# 读取所有一级模块目录
-readarray -t modules < <(find . -maxdepth 1 -type d | grep -vE '^\.$' | sort)
+# 获取所有模块目录（忽略隐藏/当前目录）
+readarray -t modules < <(find . -maxdepth 1 -type d ! -path '.' | sort)
 
 while true; do
     clear
     echo "🧠 欢迎使用 Killer Tools"
     echo "--------------------------"
 
-    # 一级菜单展示模块名
     index=1
     declare -A module_map
     for dir in "${modules[@]}"; do
-        name=${dir#./}
+        name="${dir#./}"
         chname="${module_names[$name]:-未知模块 ($name)}"
         printf " %2d) %s\n" "$index" "$chname"
         module_map[$index]="$dir"
         ((index++))
     done
 
-    echo " $index) 退出"
+    echo "  0) 退出"
     read -p $'\n请输入模块编号并回车: ' mod_choice
 
-    if [[ "$mod_choice" =~ ^[0-9]+$ && "$mod_choice" -ge 1 && "$mod_choice" -lt "$index" ]]; then
+    if [[ "$mod_choice" == "0" ]]; then
+        echo "👋 再见！"
+        break
+    elif [[ "$mod_choice" =~ ^[0-9]+$ && "$mod_choice" -ge 1 && "$mod_choice" -lt "$index" ]]; then
         selected_module="${module_map[$mod_choice]}"
         show_plugins "$selected_module"
     else
-        echo "👋 再见！"
-        break
+        echo "❌ 无效输入，请重试。"
+        sleep 1
     fi
 done
 
+# -------------------------
 # 二级菜单函数
+# -------------------------
 function show_plugins() {
     local module_dir="$1"
     clear
-    echo "🧩 模块：$module_dir"
+    echo "🧩 模块：${module_names[${module_dir#./}]} ($module_dir)"
     echo "--------------------------"
 
     mapfile -t plugins < <(find "$module_dir" -type f -name '[0-9][0-9]_*.sh' | sort)
@@ -62,13 +66,19 @@ function show_plugins() {
         ((pidx++))
     done
 
-    echo " $pidx) 返回上一级"
+    echo "  0) 返回上一级"
     read -p $'\n请输入插件编号并回车: ' plugin_choice
 
-    if [[ "$plugin_choice" =~ ^[0-9]+$ && "$plugin_choice" -ge 1 && "$plugin_choice" -lt "$pidx" ]]; then
+    if [[ "$plugin_choice" == "0" ]]; then
+        return
+    elif [[ "$plugin_choice" =~ ^[0-9]+$ && "$plugin_choice" -ge 1 && "$plugin_choice" -lt "$pidx" ]]; then
         clear
         bash "${plugin_map[$plugin_choice]}"
         read -p $'\n按回车键返回模块菜单...' _
+        show_plugins "$module_dir"
+    else
+        echo "❌ 无效输入，请重试。"
+        sleep 1
         show_plugins "$module_dir"
     fi
 }
