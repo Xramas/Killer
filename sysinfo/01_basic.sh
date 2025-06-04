@@ -8,7 +8,7 @@ echo "-----------------------------"
 if command -v lsb_release &>/dev/null; then
     echo "📦  发行版本 : $(lsb_release -ds)"
 else
-    echo "📦  发行版本 : $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2 | tr -d \")"
+    echo "📦  发行版本 : $(grep PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')"
 fi
 
 # 内核版本
