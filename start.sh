@@ -179,7 +179,7 @@ fi
 # 安装基础依赖 (essential.sh)
 echo "  ➡️ 正在准备安装基础依赖 (essential.sh)..."
 if [ -f "$INSTALL_DIR/essential.sh" ]; then #
-    read -p "❓ 是否现在安装基础依赖 (curl, unzip, lsb-release)？ (y/N): " yn_essential
+    read -p "❓ 是否现在安装基础依赖 (curl, wget, unzip, lsb-release)？ (y/N): " yn_essential
     if [[ "$yn_essential" =~ ^[Yy]$ ]]; then
         echo "  执行 $INSTALL_DIR/essential.sh ..."
         bash "$INSTALL_DIR/essential.sh"

@@ -18,7 +18,7 @@ else
 fi
 
 
-ESSENTIALS=(curl unzip lsb-release) #
+ESSENTIALS=(curl wget unzip lsb-release) #
 
 echo "$STR_CHECKING_ESSENTIAL_DEPENDENCIES" #
 apt update -y  # Output from apt will be system locale
