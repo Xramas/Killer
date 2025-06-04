@@ -46,8 +46,18 @@ if ! curl -sL "https://raw.githubusercontent.com/Xramas/Killer/master/area.sh?${
     echo "❌ 错误: 下载 area.sh 失败。"
     exit 1
 fi
-chmod +x /tmp/area.sh #
-source /tmp/area.sh # Exports AREA variable #
+
+# 校验下载的脚本完整性（基于当前仓库中的 area.sh 哈希）
+EXPECTED_SHA="8e6a3c28cc0a7580f4bf4f0e0e83c341d29c45468b92b3bfbf4d73f6890d445d"
+DOWNLOADED_SHA=$(sha256sum /tmp/area.sh | awk '{print $1}')
+if [[ "$DOWNLOADED_SHA" != "$EXPECTED_SHA" ]]; then
+    echo "❌ 错误: area.sh 校验失败，可能已被篡改。"
+    rm -f /tmp/area.sh
+    exit 1
+fi
+
+chmod +x /tmp/area.sh
+source /tmp/area.sh # Exports AREA variable
 
 #
 if [[ "$AREA" == "CN" ]]; then
