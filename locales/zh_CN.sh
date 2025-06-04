@@ -51,7 +51,7 @@ STR_EXTRACT_FAILED_NO_MAIN_DIR="❌ 解压后未找到主目录！"
 STR_SETTING_PERMISSIONS="🔑 正在设置脚本执行权限..."
 STR_STARTING_KILLER="🚀 启动 Killer..."
 
-# essential.sh
+# essential.sh (curl, wget, unzip, lsb-release)
 STR_CHECKING_ESSENTIAL_DEPENDENCIES="🔍 正在检查并安装基础依赖..."
 STR_INSTALLING_PKG="📦 安装中: "
 STR_PKG_ALREADY_EXISTS="✅ 已存在: "

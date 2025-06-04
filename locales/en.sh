@@ -51,7 +51,7 @@ STR_EXTRACT_FAILED_NO_MAIN_DIR="❌ Main directory not found after extraction!"
 STR_SETTING_PERMISSIONS="🔑 Setting script execution permissions..."
 STR_STARTING_KILLER="🚀 Starting Killer..."
 
-# essential.sh
+# essential.sh (curl, wget, unzip, lsb-release)
 STR_CHECKING_ESSENTIAL_DEPENDENCIES="🔍 Checking and installing essential dependencies..."
 STR_INSTALLING_PKG="📦 Installing: "
 STR_PKG_ALREADY_EXISTS="✅ Already exists: "
