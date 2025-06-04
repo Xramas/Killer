@@ -1,11 +1,27 @@
 #!/bin/bash
 # Name: 同步 Cloudflare IP 到 UFW 并限制非CDN访问
 
-echo "🌐 正在同步 Cloudflare IP..."
+# Source i18n so the script can run standalone or via function.sh
+if [[ -n "$STR_SECURITY_CF_SYNC_UFW_TITLE" ]]; then
+    :
+elif [[ -f "./i18n.sh" ]]; then
+    source "./i18n.sh"
+elif [[ -f "../i18n.sh" ]]; then
+    source "../i18n.sh"
+else
+    echo "Warning: i18n.sh not found in 01_cloudflare_ufw.sh. Using fallback messages."
+    STR_SECURITY_CF_SYNC_UFW_TITLE="🌐 Syncing Cloudflare IPs to UFW..."
+    STR_SECURITY_UFW_NOT_DETECTED_INSTALLING="📦 ufw not detected, installing..."
+    STR_SECURITY_ALLOW_SSH_PORT_PRE="Allowing SSH port "
+    STR_SECURITY_ALLOW_SSH_PORT_POST="/tcp for login"
+    STR_SECURITY_CF_RULES_SYNCED_UFW_ENABLED="✅ Cloudflare restriction rules synced and UFW enabled."
+fi
+
+echo "$STR_SECURITY_CF_SYNC_UFW_TITLE"
 
 # 依赖检测
 if ! command -v ufw &>/dev/null; then
-    echo "📦 未检测到 ufw，正在安装..."
+    echo "$STR_SECURITY_UFW_NOT_DETECTED_INSTALLING"
     apt update -y && apt install -y ufw
 fi
 
@@ -14,7 +30,7 @@ SSH_PORT=$(ss -tnlp | grep sshd | awk '{print $4}' | awk -F: '{print $NF}' | sor
 if [[ -z "$SSH_PORT" ]]; then
     SSH_PORT=22
 fi
-ufw allow $SSH_PORT/tcp comment "允许 SSH 端口登录"
+ufw allow $SSH_PORT/tcp comment "${STR_SECURITY_ALLOW_SSH_PORT_PRE}${SSH_PORT}${STR_SECURITY_ALLOW_SSH_PORT_POST}"
 
 # 下载 Cloudflare IP 列表
 CF_IPV4_URL="https://www.cloudflare.com/ips-v4"
@@ -49,4 +65,4 @@ ufw deny in proto tcp to any port 443 comment 'Deny non-Cloudflare HTTPS'
 # 启用防火墙
 ufw --force enable
 
-echo "✅ Cloudflare 限制规则已同步并启用 UFW"
+echo "$STR_SECURITY_CF_RULES_SYNCED_UFW_ENABLED"
